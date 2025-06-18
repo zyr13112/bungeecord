@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,23 +24,20 @@ jobs:
     - name: Build with Maven
       run: |
         mvn clean package \
-          -DfinalName=bungeecord \
           -Dcheckstyle.skip=true \
           -Dmaven.compiler.source=1.8 \
           -Dmaven.compiler.target=1.8
         
-        # 确认 JAR 文件路径
-        find . -name "*.jar" -type f | grep -vE "sources|javadoc" || echo "未找到 JAR 文件"
+        # 重命名主JAR文件
+        mv bootstrap/target/BungeeCord.jar bungeecord.jar
+        ls -la bungeecord.jar
 
-    - name: Create or Update Release
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: main
         name: BungeeCord Build
-        body: "Auto-generated build artifact"
-        files: |
-          target/bungeecord.jar
-          **/target/*.jar
+        body: "Auto-generated build @ $(date -u)"
+        files: bungeecord.jar
         draft: false
         prerelease: false
-        token: ${{ secrets.GITHUB_TOKEN }}
