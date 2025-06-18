@@ -1,6 +1,9 @@
-name: Build BungeeCord jar
+name: Build and Release BungeeCord
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,29 +20,24 @@ jobs:
 
     - name: Build with Maven
       run: |
-        # 构建前清理（确保全新构建）
-        mvn clean
-        
-        # 构建并显示详细日志
-        mvn package \
+        mvn clean package \
           -DfinalName=bungeecord \
           -Dcheckstyle.skip=true \
           -Dmaven.compiler.source=1.8 \
-          -Dmaven.compiler.target=1.8 \
-          -e -X | tee build.log
+          -Dmaven.compiler.target=1.8
+        
+        # 确认 JAR 文件路径
+        find . -name "*.jar" -type f | grep -vE "sources|javadoc" || echo "未找到 JAR 文件"
 
-    - name: Verify build output
-      run: |
-        echo "构建产物检查："
-        find . -name "*.jar" -type f | grep -vE "sources|javadoc" || echo "未找到JAR文件"
-        ls -laR */target || echo "无target目录"
-
-    - name: Upload Artifact
-      if: success()
-      uses: actions/upload-artifact@v4
+    - name: Create or Update Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: bungeecord
-        path: |
+        tag_name: main
+        name: BungeeCord Build
+        body: "Auto-generated build artifact"
+        files: |
+          target/bungeecord.jar
           **/target/*.jar
-          *.jar
-        if-no-files-found: error
+        draft: false
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
