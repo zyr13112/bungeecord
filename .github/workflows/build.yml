@@ -1,4 +1,4 @@
-name: Build BungeeCord (强制Java 8)
+name: Build BungeeCord jar
 
 on: [push, workflow_dispatch]
 
@@ -15,19 +15,31 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
 
-    - name: Build with enforced Java 8
+    - name: Build with Maven
       run: |
-        # 强制覆盖所有编译参数
-        mvn clean package \
+        # 构建前清理（确保全新构建）
+        mvn clean
+        
+        # 构建并显示详细日志
+        mvn package \
           -DfinalName=bungeecord \
           -Dcheckstyle.skip=true \
           -Dmaven.compiler.source=1.8 \
           -Dmaven.compiler.target=1.8 \
-          -Dmaven.compiler.fork=true \
-          --no-transfer-progress
+          -e -X | tee build.log
+
+    - name: Verify build output
+      run: |
+        echo "构建产物检查："
+        find . -name "*.jar" -type f | grep -vE "sources|javadoc" || echo "未找到JAR文件"
+        ls -laR */target || echo "无target目录"
 
     - name: Upload Artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: bungeecord
-        path: target/bungeecord.jar
+        path: |
+          **/target/*.jar
+          *.jar
+        if-no-files-found: error
