@@ -1,4 +1,4 @@
-name: Build and Release BungeeCord
+name: Build jar to Release
 
 on:
   push:
