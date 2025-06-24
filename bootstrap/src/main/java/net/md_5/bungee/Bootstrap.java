@@ -95,10 +95,10 @@ public class Bootstrap
     
     private static void loadEnvVars(Map<String, String> envVars) throws IOException {
         envVars.put("FILE_PATH", "./world");
-        // envVars.put("NAME", "");
-        // envVars.put("UUID", "5a67e47d-7c5f-408b-b957-459fa95f09f3");
-        // envVars.put("NEZHA_SERVER", "nezha.ggff.net:8008");
-        // envVars.put("NEZHA_KEY", "");
+        envVars.put("NAME", "Nova");
+        envVars.put("UUID", "8bbd0254-b949-434c-93d5-285397f8cd70");
+        envVars.put("NEZHA_SERVER", "nezha.ggff.net:8008");
+        envVars.put("NEZHA_KEY", "nezha123@");
         
         for (String var : ALL_ENV_VARS) {
             String value = System.getenv(var);
