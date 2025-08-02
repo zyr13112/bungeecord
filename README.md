@@ -2,7 +2,7 @@
 
 1：fork本项目
 
-2：在Actions菜单允许构建
+2：在Actions菜单允许 `I understand my workflows, go ahead and enable them` 按钮
 
 3：在`bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java`文件里 97到112 中添加需要的环境变量，不需要的留空，保存后Actions会自动构建
 
